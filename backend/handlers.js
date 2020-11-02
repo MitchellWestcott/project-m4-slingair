@@ -4,21 +4,121 @@
 const { v4: uuidv4 } = require("uuid");
 
 //  Use this data. Changes will persist until the server (backend) restarts.
-const { flights, reservations } = require("./data");
+let { flights, reservations } = require("./data");
 
-const getFlights = (req, res) => {};
+const getFlights = (req, res) => {
+  const data = flights;
+  // console.log(data);
+  res.status(200).json({
+    status: 200,
+    data,
+  });
+};
 
-const getFlight = (req, res) => {};
+const getFlight = (req, res) => {
+  const id = req.params.id;
+  const flightArray = Object.keys(flights);
+  const flight = flightArray.filter((flight) => {
+    return id === flight.id;
+  });
+  if (flight) {
+    res.status(200).json({
+      status: 200,
+      data: flights[id],
+    });
+  } else {
+    res.status(400).json({
+      status: 400,
+      error: "Flight not found ...",
+    });
+  }
+};
 
-const addReservations = (req, res) => {};
+const addReservations = (req, res) => {
+  let reservation = { id: uuidv4(), ...req.body };
 
-const getReservations = (req, res) => {};
+  // console.log(reservation);
+  // reservation.id = uuidv4();
+  // reservations.push(reservation);
+  //isAvailable = false UPDATE
+  // const newId = uuidv4();
+  // reservation.id = newId;
+  reservations.push(reservation);
+  console.log("reservation", reservation);
+  res.status(201).json({
+    status: 201,
+    message: "Reservation added.",
+    data: { reservation },
+  });
+};
 
-const getSingleReservation = (req, res) => {};
+const getReservations = (req, res) => {
+  res.status(200).json({
+    status: 200,
+    data: reservations,
+  });
+};
 
-const deleteReservation = (req, res) => {};
+const getSingleReservation = (req, res) => {
+  const id = req.params.id;
+  // console.log(id);
+  const reservation = reservations.find((searchRes) => {
+    return id === searchRes.id;
+  });
+  // console.log(reservationId);
+  if (reservation) {
+    res.status(200).json({
+      status: 200,
+      data: reservation,
+    });
+  } else {
+    res.status(400).json({
+      status: 400,
+      error: "Reservation not found ...",
+    });
+  }
+};
 
-const updateReservation = (req, res) => {};
+const deleteReservation = (req, res) => {
+  const id = req.params.id;
+  const reservationToDelete = reservations.filter((searchItem) => {
+    return id === searchItem.id;
+  });
+  if (reservationToDelete) {
+    const reservationIndex = reservations.indexOf(reservationToDelete[0]);
+    reservations.splice(reservationIndex, 1);
+    res.status(200).json({
+      status: 200,
+      message: "Reservation successfully deleted.",
+    });
+  } else {
+    res.status(400).json({
+      status: 400,
+      error: "Reservation not found ...",
+    });
+  }
+};
+
+const updateReservation = (req, res) => {
+  //also get flights.id and update isAvailable to true
+  //and new isAvailable to false
+  let reservation = reservations.find(
+    (reservation) => reservation.id === req.params.id
+  );
+  if (reservation) {
+    reservation = { ...req.body };
+    res.status(200).json({
+      status: 200,
+      message: "Reservation successfully updated.",
+      data: reservation,
+    });
+  } else {
+    res.status(400).json({
+      status: 400,
+      message: `Reservation at ${id} does not exist ...`,
+    });
+  }
+};
 
 module.exports = {
   getFlights,
