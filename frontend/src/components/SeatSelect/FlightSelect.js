@@ -20,10 +20,10 @@ const FlightSelect = ({ handleFlightSelect, flightNumber }) => {
 
   return (
     <Wrapper>
-      <label htmlFor="flight">Flight Number :</label>
+      <Label htmlFor="flight">Flight Number :</Label>
       {/* <SelectWrapper> */}
 
-      <select
+      <Select
         defaultValue="Default"
         value={flightNumber}
         onChange={(ev) => {
@@ -35,7 +35,7 @@ const FlightSelect = ({ handleFlightSelect, flightNumber }) => {
         {flights.map((flight) => {
           return <option value={flight}>{flight}</option>;
         })}
-      </select>
+      </Select>
     </Wrapper>
   );
 };
@@ -47,6 +47,20 @@ const Wrapper = styled.div`
   align-items: center;
   padding: ${themeVars.pagePadding};
   margin-bottom: ${themeVars.pagePadding};
+`;
+
+const Label = styled.label`
+  margin-bottom: 10px;
+`;
+
+const Select = styled.select`
+  margin-left: 10px;
+  height: 20px;
+  border-radius: 8px;
+  width: 160px;
+  text-decoration: none;
+  border: none;
+  outline: none;
 `;
 
 export default FlightSelect;
