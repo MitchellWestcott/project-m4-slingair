@@ -2,6 +2,7 @@
 
 // use this package to generate unique ids: https://www.npmjs.com/package/uuid
 const { v4: uuidv4 } = require("uuid");
+const data = require("./data");
 
 //  Use this data. Changes will persist until the server (backend) restarts.
 let { flights, reservations } = require("./data");
@@ -30,19 +31,20 @@ const getFlight = (req, res) => {
     res.status(400).json({
       status: 400,
       error: "Flight not found ...",
+      data: req.params,
     });
   }
 };
 
 const addReservations = (req, res) => {
-  let reservation = { id: uuidv4(), ...req.body };
+  const reservation = { id: uuidv4(), ...req.body };
+  console.log(reservation.flightNumber);
+  flights[reservation.flightNumber].forEach((seat) => {
+    if (seat.id === reservation.seat) {
+      seat.isAvailable = false;
+    }
+  });
 
-  // console.log(reservation);
-  // reservation.id = uuidv4();
-  // reservations.push(reservation);
-  //isAvailable = false UPDATE
-  // const newId = uuidv4();
-  // reservation.id = newId;
   reservations.push(reservation);
   console.log("reservation", reservation);
   res.status(201).json({
@@ -75,17 +77,24 @@ const getSingleReservation = (req, res) => {
     res.status(400).json({
       status: 400,
       error: "Reservation not found ...",
+      data: reservation,
     });
   }
 };
 
 const deleteReservation = (req, res) => {
   const id = req.params.id;
-  const reservationToDelete = reservations.filter((searchItem) => {
+  const reservationToDelete = reservations.find((searchItem) => {
     return id === searchItem.id;
   });
+  // console.log("res to delete", reservationToDelete);
   if (reservationToDelete) {
     const reservationIndex = reservations.indexOf(reservationToDelete[0]);
+    flights[reservationToDelete.flightNumber].forEach((seat) => {
+      if (seat.id === reservationToDelete.seat) {
+        seat.isAvailable = true;
+      }
+    });
     reservations.splice(reservationIndex, 1);
     res.status(200).json({
       status: 200,
@@ -95,6 +104,7 @@ const deleteReservation = (req, res) => {
     res.status(400).json({
       status: 400,
       error: "Reservation not found ...",
+      data: req.params,
     });
   }
 };
@@ -116,6 +126,7 @@ const updateReservation = (req, res) => {
     res.status(400).json({
       status: 400,
       message: `Reservation at ${id} does not exist ...`,
+      data: reservation,
     });
   }
 };
